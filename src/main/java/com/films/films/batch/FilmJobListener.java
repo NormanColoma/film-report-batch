@@ -1,5 +1,6 @@
-package com.films.films.batch;
+package com.films.films.batch.repositories;
 
+import com.films.films.batch.configuration.ExecutionConfiguration;
 import lombok.AllArgsConstructor;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.listener.JobExecutionListenerSupport;
