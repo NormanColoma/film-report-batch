@@ -5,3 +5,4 @@ spring:
       port: 27017
       database: films
 filePath: films.txt
+type: txt

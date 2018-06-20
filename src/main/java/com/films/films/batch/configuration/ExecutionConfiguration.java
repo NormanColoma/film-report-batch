@@ -1,4 +1,4 @@
-package com.films.films.batch;
+package com.films.films.batch.configuration;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

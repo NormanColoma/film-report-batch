@@ -1,5 +1,7 @@
 package com.films.films.batch;
 
+import com.films.films.batch.models.Film;
+import com.films.films.batch.repositories.FilmRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.data.RepositoryItemReader;

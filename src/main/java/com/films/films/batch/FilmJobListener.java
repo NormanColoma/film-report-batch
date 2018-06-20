@@ -1,4 +1,4 @@
-package com.films.films.batch.repositories;
+package com.films.films.batch;
 
 import com.films.films.batch.configuration.ExecutionConfiguration;
 import lombok.AllArgsConstructor;

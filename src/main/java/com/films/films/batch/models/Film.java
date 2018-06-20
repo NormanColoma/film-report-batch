@@ -1,4 +1,4 @@
-package com.films.films.batch;
+package com.films.films.batch.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

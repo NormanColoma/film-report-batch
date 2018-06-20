@@ -1,5 +1,9 @@
-package com.films.films.batch;
+package com.films.films.batch.configuration;
 
+import com.films.films.batch.models.Film;
+import com.films.films.batch.FilmJobListener;
+import com.films.films.batch.FilmReader;
+import com.films.films.batch.FilmWriter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
