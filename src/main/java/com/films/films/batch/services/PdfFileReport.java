@@ -2,7 +2,7 @@ package com.films.films.batch.services;
 
 import com.films.films.batch.models.Film;
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -21,30 +21,36 @@ import java.util.List;
 public class PdfFileReport implements FilmReporter {
     @Override
     public void generateReport(Path filePath, List<Film> films) {
-        Document document = new Document();
+        Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
         try {
-            PdfWriter.getInstance(document, new FileOutputStream(filePath.toString()));
-            document.open();
-            Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
+            if (!Files.exists(filePath)) {
+                Document document = new Document();
+                PdfWriter.getInstance(document, new FileOutputStream(filePath.toString()));
+                document.open();
+                for(Film film : films) {
+                    log.info("Film to be written: {}", film);
+                    Paragraph paragraph = new Paragraph(film.toString(), font);
+                    document.add(paragraph);
+                }
+                document.close();
+            } else {
+                PdfReader reader = new PdfReader(filePath.toString());
+                PdfStamper pdfStamper = new PdfStamper(reader, new FileOutputStream(filePath.toString()));
 
+                PdfContentByte overContent = pdfStamper.getOverContent(1);
+                ColumnText columnText = new ColumnText(overContent);
 
-            for(Film film : films) {
-                log.info("Film to be written: {}", film);
-                Paragraph paragraph = new Paragraph(film.toString(), font);
-                document.add(paragraph);
-                /*byte[] strToBytes = (film.toString() + System.lineSeparator()).getBytes();
-                log.info("Film to be written: {}", film);
-                try {
-                    Files.write(filePath, strToBytes, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }*/
+                for (Film film : films) {
+                    log.info("Film to be written: {}", film);
+                    Paragraph paragraph = new Paragraph(film.toString(), font);
+                    columnText.addText(paragraph);
+                }
+
+                pdfStamper.close();
+                reader.close();
             }
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
+        } catch (DocumentException | IOException e) {
             e.printStackTrace();
         }
-        document.close();
     }
 }
