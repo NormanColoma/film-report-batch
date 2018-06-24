@@ -26,7 +26,7 @@ public class BatchConfiguration {
     @Bean
     public Step saveFilms() {
         return steps.get("readFilmsStep")
-                .<Film, Film>chunk(1)
+                .<Film, Film>chunk(2)
                 .reader(filmReader.createReader())
                 .writer(filmWriter)
                 .build();

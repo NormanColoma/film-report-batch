@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 @Component
 @ConditionalOnProperty(name="type", havingValue="txt")
-public class FlatFileFilmReport implements FilmReporter {
+public class FlatFileReport implements FilmReporter {
     @Override
     public void generateReport(Path filePath, List<Film> films) {
         for(Film film : films) {

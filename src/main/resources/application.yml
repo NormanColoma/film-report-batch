@@ -4,5 +4,5 @@ spring:
       host: localhost
       port: 27017
       database: films
-filePath: films.txt
-type: txt
+filePath: films.pdf
+type: pdf
