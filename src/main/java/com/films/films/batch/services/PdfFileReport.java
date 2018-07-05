@@ -7,7 +7,9 @@ import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,7 @@ import java.util.List;
 @Slf4j
 public class PdfFileReport implements FilmReporter {
     private List<Film> existingFilms = new ArrayList<>();
+
     @Override
     public void generateReport(Path filePath, List<Film> films) {
         try {
@@ -34,8 +37,10 @@ public class PdfFileReport implements FilmReporter {
                 Document document = new Document(pdfDocument);
                 document.add(createHeader());
 
-                addFilmsAsRowsToPdf(document);
+                Table table = createTable();
+                addFilmsAsRowsToTable(table);
 
+                document.add(table);
                 closePdf(pdfDocument, document);
             } else {
                 existingFilms.addAll(films);
@@ -52,11 +57,26 @@ public class PdfFileReport implements FilmReporter {
         }
     }
 
-    private void addFilmsAsRowsToPdf(Document document) throws IOException {
-        for (Film film : existingFilms) {
-            log.info("Film to be written: {}", film);
-            document.add(createRow(film));
-        }
+    private void addFilmsAsRowsToTable(Table table) {
+        existingFilms.forEach(film -> {
+            table.addCell(film.getId());
+            table.addCell(film.getName());
+        });
+    }
+
+    private Table createTable() {
+        Integer TABLE_COLUMNS = 2;
+        Integer ROW_SPAN = 1;
+        Integer COL_SPAN = 1;
+        String NAME_TABLE_HEADER = "Id";
+        String ID_TABLE_HEADER = "Id";
+
+        Table table = new Table(TABLE_COLUMNS);
+        Cell idHeader = new Cell(ROW_SPAN,COL_SPAN).add(ID_TABLE_HEADER).setBold();
+        Cell nameHeader = new Cell(ROW_SPAN,COL_SPAN).add(NAME_TABLE_HEADER).setBold();
+        table.addHeaderCell(idHeader);
+        table.addHeaderCell(nameHeader);
+        return table;
     }
 
     private PdfDocument createPdf(Path filePath) throws FileNotFoundException {
@@ -66,13 +86,6 @@ public class PdfFileReport implements FilmReporter {
     private void closePdf(PdfDocument pdfDoc, Document document) {
         document.close();
         pdfDoc.close();
-    }
-
-    private Paragraph createRow(Film film) throws IOException {
-        return new Paragraph(film.toString())
-                                .setFont(PdfFontFactory.createFont(FontConstants.HELVETICA))
-                                .setFontSize(14)
-                                .setFontColor(Color.BLACK);
     }
 
     private Paragraph createHeader() throws IOException {
