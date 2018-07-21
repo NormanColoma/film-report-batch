@@ -1,5 +1,6 @@
 package com.films.films.batch.configuration;
 
+import com.films.films.batch.UploadReportTasklet;
 import com.films.films.batch.models.Film;
 import com.films.films.batch.FilmJobListener;
 import com.films.films.batch.FilmReader;
@@ -22,6 +23,7 @@ public class BatchConfiguration {
     private final FilmReader filmReader;
     private final StepBuilderFactory steps;
     private final FilmWriter filmWriter;
+    private final UploadReportTasklet uploadReportTasklet;
 
     @Bean
     public Step saveFilms() {
@@ -33,10 +35,18 @@ public class BatchConfiguration {
     }
 
     @Bean
+    public Step uploadReport() {
+        return steps.get("uploadReportStep")
+                .tasklet(uploadReportTasklet)
+                .build();
+    }
+
+    @Bean
     public Job job(JobBuilderFactory jobBuilderFactory, FilmJobListener listener){
         return jobBuilderFactory.get("filmsJob")
                 .listener(listener)
                 .start(saveFilms())
+                .next(uploadReport())
                 .build();
     }
 }

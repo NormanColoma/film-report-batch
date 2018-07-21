@@ -20,9 +20,11 @@ public class FilmReader {
         HashMap<String, Sort.Direction> sort = new HashMap<>();
         sort.put("name", Sort.Direction.ASC);
         RepositoryItemReader<Film> reader = new RepositoryItemReader<>();
+
         reader.setRepository(filmRepository);
         reader.setMethodName("findAll");
         reader.setSort(sort);
+
         return reader;
     }
 }
