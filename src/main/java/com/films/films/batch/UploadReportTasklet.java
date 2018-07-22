@@ -15,6 +15,7 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,28 +31,30 @@ public class UploadReportTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) {
         try {
             String fileName = executionConfiguration.getFilePath();
-            String credentialsPath = googleStorageConfiguration.getCredentials();
-            String projectId = googleStorageConfiguration.getProjectId();
-            String bucket = googleStorageConfiguration.getBucket();
-            Path filePath = Paths.get(fileName);
 
-            ClassLoader classLoader = getClass().getClassLoader();
-            InputStream inputStream = classLoader.getResourceAsStream(credentialsPath);
-            Credentials credentials = GoogleCredentials.fromStream(inputStream);
+            Credentials credentials = getGoogleCredentials(googleStorageConfiguration.getCredentials());
+            Storage storage = getStorageService(googleStorageConfiguration.getProjectId(), credentials);
 
-
-            Storage storage = StorageOptions.newBuilder()
-                    .setCredentials(credentials)
-                    .setProjectId(projectId)
-                    .build().getService();
-
-            byte[] bytes = Files.readAllBytes(filePath);
-            storage.create(BlobInfo.newBuilder(bucket, fileName).build(), bytes);
+            byte[] bytes = Files.readAllBytes(Paths.get(fileName));
+            storage.create(BlobInfo.newBuilder(googleStorageConfiguration.getBucket(), fileName).build(), bytes);
 
             log.info("file updated successfully");
         } catch (Exception ex) {
             log.error(ex.toString());
         }
         return null;
+    }
+
+    private Storage getStorageService(String projectId, Credentials credentials) {
+        return StorageOptions.newBuilder()
+                        .setCredentials(credentials)
+                        .setProjectId(projectId)
+                        .build().getService();
+    }
+
+    private Credentials getGoogleCredentials(String credentialsPath) throws IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        InputStream inputStream = classLoader.getResourceAsStream(credentialsPath);
+        return GoogleCredentials.fromStream(inputStream);
     }
 }
