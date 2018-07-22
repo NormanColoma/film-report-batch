@@ -6,4 +6,8 @@ spring:
       database: films
 filePath: films.pdf
 type: pdf
-credentials: ${CREDENTIALS}
+google:
+  storage:
+    credentials: ${CREDENTIALS}
+    bucket: film-reports
+    projectId: films-batch

@@ -1,6 +1,7 @@
 package com.films.films.batch;
 
 import com.films.films.batch.configuration.ExecutionConfiguration;
+import com.films.films.batch.configuration.GoogleStorageConfiguration;
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.BlobInfo;
@@ -24,24 +25,28 @@ import java.nio.file.Paths;
 @Slf4j
 public class UploadReportTasklet implements Tasklet {
     private final ExecutionConfiguration executionConfiguration;
+    private final GoogleStorageConfiguration googleStorageConfiguration;
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) {
         try {
             String fileName = executionConfiguration.getFilePath();
-            String credentialsPath = executionConfiguration.getCredentials();
+            String credentialsPath = googleStorageConfiguration.getCredentials();
+            String projectId = googleStorageConfiguration.getProjectId();
+            String bucket = googleStorageConfiguration.getBucket();
             Path filePath = Paths.get(fileName);
 
             ClassLoader classLoader = getClass().getClassLoader();
             InputStream inputStream = classLoader.getResourceAsStream(credentialsPath);
             Credentials credentials = GoogleCredentials.fromStream(inputStream);
 
+
             Storage storage = StorageOptions.newBuilder()
                     .setCredentials(credentials)
-                    .setProjectId("films-batch")
+                    .setProjectId(projectId)
                     .build().getService();
 
             byte[] bytes = Files.readAllBytes(filePath);
-            storage.create(BlobInfo.newBuilder("film-reports", fileName).build(), bytes);
+            storage.create(BlobInfo.newBuilder(bucket, fileName).build(), bytes);
 
             log.info("file updated successfully");
         } catch (Exception ex) {
