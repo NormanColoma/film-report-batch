@@ -28,10 +28,11 @@ public class UploadReportTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) {
         try {
             String fileName = executionConfiguration.getFilePath();
+            String credentialsPath = executionConfiguration.getCredentials();
             Path filePath = Paths.get(fileName);
 
             ClassLoader classLoader = getClass().getClassLoader();
-            InputStream inputStream = classLoader.getResourceAsStream("credentials.json");
+            InputStream inputStream = classLoader.getResourceAsStream(credentialsPath);
             Credentials credentials = GoogleCredentials.fromStream(inputStream);
 
             Storage storage = StorageOptions.newBuilder()

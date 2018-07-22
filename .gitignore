@@ -22,4 +22,5 @@ films.iml
 mvnw
 mvnw.cmd
 films.txt
-films.pdf
+/films.pdf
+/credentials.json

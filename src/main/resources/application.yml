@@ -6,3 +6,4 @@ spring:
       database: films
 filePath: films.pdf
 type: pdf
+credentials: ${CREDENTIALS}
