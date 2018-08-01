@@ -15,6 +15,7 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -52,8 +53,7 @@ public class UploadReportTasklet implements Tasklet {
     }
 
     private Credentials getGoogleCredentials(String credentialsPath) throws IOException {
-        ClassLoader classLoader = getClass().getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(credentialsPath);
+        InputStream inputStream = Files.newInputStream(Paths.get(credentialsPath));
         return GoogleCredentials.fromStream(inputStream);
     }
 }
