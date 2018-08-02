@@ -2,6 +2,7 @@ package com.films.films.batch;
 
 import com.films.films.batch.configuration.ExecutionConfiguration;
 import com.films.films.batch.configuration.GoogleStorageConfiguration;
+import com.films.films.batch.services.EventEmitter.FilmReporterProducer;
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.BlobInfo;
@@ -9,6 +10,7 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -27,6 +29,8 @@ import java.nio.file.Paths;
 public class UploadReportTasklet implements Tasklet {
     private final ExecutionConfiguration executionConfiguration;
     private final GoogleStorageConfiguration googleStorageConfiguration;
+    private final FilmReporterProducer filmReporterProducer;
+
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) {
         try {
@@ -39,6 +43,8 @@ public class UploadReportTasklet implements Tasklet {
             storage.create(BlobInfo.newBuilder(googleStorageConfiguration.getBucket(), fileName).build(), bytes);
 
             log.info("file updated successfully");
+
+            filmReporterProducer.produce(fileName);
         } catch (Exception ex) {
             log.error(ex.toString());
         }
