@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 @Slf4j
-public class FilmReporterProducer {
+public class FilmReporterEmitter {
     private final FilmReportProducerConfiguration filmReportProducerConfiguration;
     private final RabbitTemplate rabbitTemplate;
 
-    public void produce(String message) {
+    public void emit(String message) {
         rabbitTemplate.convertAndSend(filmReportProducerConfiguration.getDirectExchange(), filmReportProducerConfiguration.getRoutingKey(), message);
         rabbitTemplate.stop();
     }
