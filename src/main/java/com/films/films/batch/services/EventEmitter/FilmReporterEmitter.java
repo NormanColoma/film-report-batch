@@ -15,6 +15,5 @@ public class FilmReporterEmitter {
 
     public void emit(String message) {
         rabbitTemplate.convertAndSend(filmReportProducerConfiguration.getDirectExchange(), filmReportProducerConfiguration.getRoutingKey(), message);
-        rabbitTemplate.stop();
     }
 }
