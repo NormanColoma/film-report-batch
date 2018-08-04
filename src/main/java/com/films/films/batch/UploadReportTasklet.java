@@ -2,7 +2,7 @@ package com.films.films.batch;
 
 import com.films.films.batch.configuration.ExecutionConfiguration;
 import com.films.films.batch.configuration.GoogleStorageConfiguration;
-import com.films.films.batch.services.EventEmitter.FilmReporterEmitter;
+import com.films.films.batch.services.emitter.FilmReporterEmitter;
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.BlobInfo;

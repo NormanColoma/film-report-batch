@@ -4,10 +4,17 @@ spring:
       host: localhost
       port: 27017
       database: films
+
 filePath: films.pdf
 type: pdf
+
 google:
   storage:
     credentials: ${CREDENTIALS}
     bucket: film-reports
     projectId: films-batch
+
+rabbitmq:
+  exchange: films-report-generated;
+  queue: film-reporter
+  routingKey: films.report.mail

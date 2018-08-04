@@ -1,4 +1,4 @@
-package com.films.films.batch.services.EventEmitter;
+package com.films.films.batch.services.emitter;
 
 import com.films.films.batch.configuration.FilmReportProducerConfiguration;
 import lombok.AllArgsConstructor;
