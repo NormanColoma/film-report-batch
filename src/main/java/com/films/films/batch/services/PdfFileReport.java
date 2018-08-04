@@ -19,7 +19,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static java.util.Arrays.asList;
 
 @Component
 @ConditionalOnProperty(name="type", havingValue="pdf")
@@ -61,22 +64,32 @@ public class PdfFileReport implements FilmReporter {
         existingFilms.forEach(film -> {
             table.addCell(film.getId());
             table.addCell(film.getName());
+            table.addCell(film.getImpressions().toString());
+            table.addCell(film.getDownloads().toString());
         });
     }
 
     private Table createTable() {
-        Integer TABLE_COLUMNS = 2;
+        Integer TABLE_COLUMNS = 4;
         Integer ROW_SPAN = 1;
         Integer COL_SPAN = 1;
-        String NAME_TABLE_HEADER = "Id";
+        String NAME_TABLE_HEADER = "Name";
         String ID_TABLE_HEADER = "Id";
+        String IMPRESSIONS_TABLE_HEADER = "Impressions";
+        String DOWNLOADS_TABLE_HEADER = "Downloads";
 
         Table table = new Table(TABLE_COLUMNS);
         Cell idHeader = new Cell(ROW_SPAN,COL_SPAN).add(ID_TABLE_HEADER).setBold();
         Cell nameHeader = new Cell(ROW_SPAN,COL_SPAN).add(NAME_TABLE_HEADER).setBold();
-        table.addHeaderCell(idHeader);
-        table.addHeaderCell(nameHeader);
+        Cell impressionsHeader = new Cell(ROW_SPAN,COL_SPAN).add(IMPRESSIONS_TABLE_HEADER).setBold();
+        Cell downloadsHeader = new Cell(ROW_SPAN,COL_SPAN).add(DOWNLOADS_TABLE_HEADER).setBold();
+
+        addHeaderCells(table, asList(idHeader, nameHeader, impressionsHeader, downloadsHeader));
         return table;
+    }
+
+    private void addHeaderCells(Table table, List<Cell> headers) {
+        headers.forEach(table::addHeaderCell);
     }
 
     private PdfDocument createPdf(Path filePath) throws FileNotFoundException {
