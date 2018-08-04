@@ -5,11 +5,13 @@ import com.films.films.batch.configuration.GoogleStorageConfiguration;
 import com.films.films.batch.services.emitter.FilmReporterEmitter;
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.Date;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -20,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 @Component
 @AllArgsConstructor
@@ -38,7 +42,9 @@ public class UploadReportTasklet implements Tasklet {
             Storage storage = getStorageService(googleStorageConfiguration.getProjectId(), credentials);
 
             byte[] bytes = Files.readAllBytes(Paths.get(fileName));
-            storage.create(BlobInfo.newBuilder(googleStorageConfiguration.getBucket(), fileName).build(), bytes);
+            String fileNameForBlob = generateNameForBlob(fileName);
+
+            storage.create(BlobInfo.newBuilder(googleStorageConfiguration.getBucket(), fileNameForBlob).build(), bytes);
 
             log.info("file updated successfully");
 
@@ -47,6 +53,12 @@ public class UploadReportTasklet implements Tasklet {
             log.error(ex.toString());
         }
         return null;
+    }
+
+    private String generateNameForBlob(String fileName) {
+        DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        String dateForReport = df.format(new DateTime().toDate());
+        return String.format("%s-%s.pdf", fileName.replace(".pdf", ""), dateForReport);
     }
 
     private Storage getStorageService(String projectId, Credentials credentials) {

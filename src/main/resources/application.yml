@@ -13,8 +13,3 @@ google:
     credentials: ${CREDENTIALS}
     bucket: film-reports
     projectId: films-batch
-
-rabbitmq:
-  exchange: films-report-generated;
-  queue: film-reporter
-  routingKey: films.report.mail
