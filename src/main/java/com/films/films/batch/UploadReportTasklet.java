@@ -48,7 +48,7 @@ public class UploadReportTasklet implements Tasklet {
 
             log.info("file updated successfully");
 
-            filmReporterProducer.emit(fileName);
+            filmReporterProducer.emit(fileNameForBlob);
         } catch (Exception ex) {
             log.error(ex.toString());
         }
